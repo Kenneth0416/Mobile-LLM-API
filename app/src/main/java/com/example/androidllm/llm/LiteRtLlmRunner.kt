@@ -35,6 +35,7 @@ class LiteRtLlmRunner(
                 initialized -> "LiteRT-LM engine initialized"
                 else -> "model present; engine will initialize on first request"
             },
+            modelId = modelOption.id,
         )
     }
 
@@ -61,8 +62,8 @@ class LiteRtLlmRunner(
             return ChatCompletionResult(
                 model = request.model.ifBlank { modelOption.id },
                 text = text,
-                promptTokens = roughTokenCount(request.latestUserMessage),
-                completionTokens = roughTokenCount(text),
+                promptTokens = TokenEstimator.roughCount(request.latestUserMessage),
+                completionTokens = TokenEstimator.roughCount(text),
             )
         }
     }
@@ -77,6 +78,7 @@ class LiteRtLlmRunner(
             EngineConfig(
                 modelPath = modelFile.absolutePath,
                 backend = Backend.CPU(numOfThreads = cpuThreads),
+                maxNumTokens = modelOption.contextTokens,
                 cacheDir = cacheDir.absolutePath,
             )
         )
@@ -112,7 +114,4 @@ class LiteRtLlmRunner(
             }
         }
 
-    private fun roughTokenCount(text: String): Int =
-        text.split(Regex("\\s+")).count { it.isNotBlank() }
 }
-

@@ -7,4 +7,6 @@ local.properties
 models/
 *.litertlm
 *.apk
+.kotlin/
+tmp/
 

@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-Hans">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Android LLM Chatbot Bench</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <section class="topbar">
+        <div>
+          <p class="eyebrow">Android Local LLM</p>
+          <h1>手机模型测试台</h1>
+        </div>
+        <div class="status">
+          <span id="statusDot" class="dot idle"></span>
+          <span id="statusText">检查连接中</span>
+        </div>
+      </section>
+
+      <section class="metrics" aria-label="speed metrics">
+        <div>
+          <span class="label">总耗时</span>
+          <strong id="latency">-</strong>
+        </div>
+        <div>
+          <span class="label">输出 token</span>
+          <strong id="tokens">-</strong>
+        </div>
+        <div>
+          <span class="label">tokens/sec</span>
+          <strong id="throughput">-</strong>
+        </div>
+        <div>
+          <span class="label">样本均值</span>
+          <strong id="average">-</strong>
+        </div>
+      </section>
+
+      <section class="workspace">
+        <aside class="panel">
+          <label for="endpoint">API endpoint</label>
+          <input id="endpoint" value="http://127.0.0.1:18080/v1/chat/completions" />
+
+          <label for="modelSelect">Model</label>
+          <select id="modelSelect"></select>
+          <div id="modelMeta" class="model-meta">加载模型列表中</div>
+
+          <label for="systemPrompt">System prompt</label>
+          <textarea id="systemPrompt" rows="5">你运行在一台安卓手机本地。直接回答，不要解释思考过程。默认用简短中文回答。</textarea>
+
+          <label class="toggle">
+            <input id="speedMode" type="checkbox" checked />
+            <span>快速模式</span>
+          </label>
+
+          <div class="controls">
+            <label>
+              Temperature
+              <input id="temperature" type="number" min="0" max="2" step="0.1" value="0.1" />
+            </label>
+            <label>
+              输出预算
+              <input id="maxTokens" type="number" min="8" max="2048" step="8" value="256" />
+            </label>
+          </div>
+
+          <section id="budgetPanel" class="budget" aria-label="context budget">
+            <div>
+              <span>模型上下文</span>
+              <strong id="contextTokens">2048</strong>
+            </div>
+            <div>
+              <span>输入估算</span>
+              <strong id="inputTokens">-</strong>
+            </div>
+            <div>
+              <span>预留输出</span>
+              <strong id="outputBudget">256</strong>
+            </div>
+            <div>
+              <span>剩余预算</span>
+              <strong id="remainingTokens">-</strong>
+            </div>
+          </section>
+
+          <button id="runBench" type="button">运行基准测试</button>
+          <button id="clearChat" type="button" class="secondary">清空</button>
+
+          <div class="note">
+            当前 LiteRT 文件上下文为 2048 tokens，输入与预留输出共用这个预算。输出预算用于测试保护；当前接口不保证严格截断生成长度。
+          </div>
+        </aside>
+
+        <section class="chat">
+          <div id="messages" class="messages" aria-live="polite"></div>
+          <form id="chatForm" class="composer">
+            <textarea id="prompt" rows="3" placeholder="输入一个测试 prompt，例如：用三句话解释量子纠缠。"></textarea>
+            <button id="send" type="submit">发送</button>
+          </form>
+        </section>
+      </section>
+    </main>
+
+    <script type="module" src="./src/app.js"></script>
+  </body>
+</html>
